@@ -79,12 +79,15 @@ pdfsm::BTable<RobotState> behaviors{
 
 pdfsm::Context ctx;
 
-int main(void) {
-  pdfsm::StateMachine<RobotState> fsm;
+pdfsm::StateMachine<RobotState> fsm;
 
-  fsm.Setup(behaviors, transitions);
-  fsm.Jump(ctx, RobotState::Moving);
-  fsm.Push(ctx, RobotState::Dancing);
-  fsm.Pop(ctx);
+int main(void) {
+  pdfsm::StateMachineHandler<RobotState> h(behaviors, transitions);
+
+  h.SetupHandlingFsm(fsm);
+  h.Jump(ctx, RobotState::Moving);
+  h.Push(ctx, RobotState::Dancing);
+  h.Pop(ctx);
+  h.ClearHandlingFsm();
   return 0;
 }
