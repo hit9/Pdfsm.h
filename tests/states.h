@@ -204,5 +204,3 @@ static pdfsm::BTable<S> behaviorTable = {
     std::make_unique<B>(),
     std::make_unique<C>(),
 };
-
-static pdfsm::StateMachine<S> fsm;
