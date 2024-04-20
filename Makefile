@@ -3,7 +3,13 @@ defalut: build
 install:
 	conan install . --output-folder=build --build=missing -s compiler.cppstd=20
 
-cmake-build:
+cmake-build-debug:
+	cd build && cmake .. \
+		-DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake \
+		-DCMAKE_BUILD_TYPE=Debug \
+		-DCMAKE_EXPORT_COMPILE_COMMANDS=1
+
+cmake-build-release:
 	cd build && cmake .. \
 		-DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake \
 		-DCMAKE_BUILD_TYPE=Release \
@@ -12,11 +18,11 @@ cmake-build:
 cmake-build-test:
 	cd build && cmake .. \
 		-DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake \
-		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_BUILD_TYPE=Debug \
 		-DCMAKE_EXPORT_COMPILE_COMMANDS=1 \
 		-DPDFSM_TEST=1
 
-build: cmake-build
+build: cmake-build-release
 	cd build && make
 
 build-example:

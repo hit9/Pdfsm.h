@@ -240,7 +240,7 @@ class StateMachineHandler {
   // Pop current active state and resume the previous paused state.
   void Pop(const Context& ctx) {
     assert(m != nullptr);
-    assert(m->top >= 0 );
+    assert(m->top >= 0);
     bt[m->stack[m->top--]]->OnTerminate(ctx);
     bt[m->stack[m->top]]->OnResume(ctx);
   }
