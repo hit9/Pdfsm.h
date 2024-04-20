@@ -101,10 +101,10 @@ TEST_CASE("pdfsm/4", "[Signal]") {
 TEST_CASE("pdfsm/5", "[Multiple fsm]") {
   auto bb = std::make_shared<Blackboard>();
   auto ctx = pdfsm::Context(bb);
-  pdfsm::StateMachine<S> fsm1, fsm2;
+  Entity e1, e2;
   pdfsm::StateMachineHandler<S> h(behaviorTable, transitionTable);
   // Handle fsm1
-  h.SetHandlingFsm(fsm1, ctx);
+  h.SetHandlingFsm(e1.fsm, ctx);
   REQUIRE(bb->onEnterCounterA == 1);
   REQUIRE(h.Top() == S::A);
   h.Jump(ctx, S::B);
@@ -114,7 +114,7 @@ TEST_CASE("pdfsm/5", "[Multiple fsm]") {
   REQUIRE(bb->updateCounterB == 1);
   h.ClearHandlingFsm();
   // Handle fsm2
-  h.SetHandlingFsm(fsm2, ctx);
+  h.SetHandlingFsm(e2.fsm, ctx);
   REQUIRE(bb->onEnterCounterA == 2);
   REQUIRE(h.Top() == S::A);
   h.Jump(ctx, S::C);
@@ -124,13 +124,13 @@ TEST_CASE("pdfsm/5", "[Multiple fsm]") {
   REQUIRE(bb->updateCounterC == 1);
   h.ClearHandlingFsm();
   // Back handling fsm1
-  h.SetHandlingFsm(fsm1, ctx);
+  h.SetHandlingFsm(e1.fsm, ctx);
   REQUIRE(h.Top() == S::B);  // still in B
   h.Update(ctx);
   REQUIRE(bb->updateCounterB == 2);
   h.ClearHandlingFsm();
   // Back handling fsm2
-  h.SetHandlingFsm(fsm2, ctx);
+  h.SetHandlingFsm(e2.fsm, ctx);
   REQUIRE(h.Top() == S::C);  // still in C
   h.Update(ctx);
   REQUIRE(bb->updateCounterC == 2);
