@@ -9,7 +9,7 @@ add_library(pdfsm INTERFACE)
 set_target_properties(pdfsm PROPERTIES PUBLIC_HEADER "pdfsm.h")
 
 if(PDFSM_TEST)
-    # add_subdirectory(tests EXCLUDE_FROM_ALL)
+    add_subdirectory(tests EXCLUDE_FROM_ALL)
     add_subdirectory(example EXCLUDE_FROM_ALL)
 endif()
 

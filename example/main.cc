@@ -84,7 +84,7 @@ pdfsm::StateMachine<RobotState> fsm;
 int main(void) {
   pdfsm::StateMachineHandler<RobotState> h(behaviors, transitions);
 
-  h.SetupHandlingFsm(fsm);
+  h.SetHandlingFsm(fsm, ctx);
   h.Jump(ctx, RobotState::Moving);
   h.Push(ctx, RobotState::Dancing);
   h.Pop(ctx);

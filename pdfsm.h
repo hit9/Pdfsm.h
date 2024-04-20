@@ -2,12 +2,13 @@
 // License: BSD. https://github.com/hit9/pdfsm.h
 
 // A simple pushdown finite states machine library that
-// attemptting to separate data and behaviors as much as possible.
+// separates data and behaviors as much as possible.
 //
 // 1. States are just enum values.
 // 2. Implement behaviors by inheriting from pdfsm::B
 // 3. A behavior class shouldn't contain any internal data.
-// 4. A StateMachine is just a struct.
+// 4. A StateMachine is just a struct, holding active states.
+// 5. StateMachineHandler is for handling each state machine's behavior.
 //
 // Requires: C++20
 //
@@ -37,30 +38,38 @@ struct Context {
   std::chrono::nanoseconds delta;
   // user data.
   std::any data;
+
+  Context() = default;
+  Context(std::any data) : data(data) {}
 };
 
 //////////////////////
 /// State
 //////////////////////
 
-// EnumClass constrains that the given type T must be an enum.
+// EnumClass constrains that the given type T must be an integeral enum.
 template <typename T>
 concept EnumClass = std::is_enum_v<T> && std::is_integral_v<std::underlying_type_t<T>>;
 
-// Forward declaration of StateMachineHandler.
 template <EnumClass State>
-class StateMachineHandler;
+class StateMachineHandler;  // Forward declaration of StateMachineHandler.
 
 template <EnumClass State>
-class IStateBehavior {
+class IStateBehaviorBase {
+  using Handler = StateMachineHandler<State>;
+
  private:
-  StateMachineHandler<State>* handler = nullptr;
-  void bindHandler(StateMachineHandler<State>* h) { handler = h; }
-  friend StateMachineHandler<State>;
+  Handler* handler = nullptr;
+  void bindHandler(Handler* h) { handler = h; }
+  friend Handler;
 
  protected:
-  StateMachineHandler<State>& Handler() { return *handler; }
+  Handler& GetHandler() { return *handler; }
+};
 
+// StateBehavior interface.
+template <EnumClass State>
+class IStateBehavior : public IStateBehaviorBase<State> {
  public:
   IStateBehavior() = default;
   virtual ~IStateBehavior() = default;
@@ -119,13 +128,15 @@ using TransitionTable = std::initializer_list<Transition<State>>;
 /// StateMachine
 //////////////////////
 
+// StateMachine is just plain struct storing active states.
 template <EnumClass State>
 struct StateMachine {
   // N is the max value of this enum class, aka the size.
   static const int N = static_cast<int>(State::N);
   // static-array based stack, stores enum value's integers.
   // The initial state is state 0.
-  int stack[N], top = 0;
+  // top=-1 meaning this state machine still not started.
+  int stack[N], top = -1;
 };
 
 /////////////////////////
@@ -137,11 +148,12 @@ class StateMachineHandler {
  private:
   // N is the max value of this enum class, aka the size.
   static const int N = static_cast<int>(State::N);
-  // (compressed) transition table, tt[from][to]
+  // (Compressed) transition table, tt[from][to]
   std::bitset<N> tt[N];
-  // behavior table, bt[integer of state] => raw pointer to the behavior instance.
+  // Behavior pointers array.
+  // bt[state enum integer] => raw pointer to the behavior instance.
   IStateBehavior<State>* bt[N];
-  // processing fsm.
+  // Currently processing fsm.
   StateMachine<State>* m = nullptr;
 
  protected:
@@ -153,15 +165,15 @@ class StateMachineHandler {
   }
   inline int C(State state) const { return static_cast<int>(state); }
 
-  // setup this state machine by a behaviors table and a transitions table.
+  // Setup this state machine by a behaviors table and a transitions table.
   void setup(const StateBehaviorTable<State>& behaviors,
              const TransitionTable<State>& transitions) {
     // Setup behaviors.
     for (auto& b : behaviors) {
       auto state = b->StateValue();
       bt[C(state)] = b.get();
-      b->OnSetup();
       b->bindHandler(this);
+      b->OnSetup();
     }
 
     // Setup transitions.
@@ -177,7 +189,10 @@ class StateMachineHandler {
   }
 
   // Sets current handling fsm.
-  void SetupHandlingFsm(StateMachine<State>& fsm) { m = &fsm; }
+  void SetHandlingFsm(StateMachine<State>& fsm, const Context& ctx) {
+    m = &fsm;
+    if (m->top == -1) Jump(ctx, static_cast<State>(0));
+  }
 
   // Clears current handling fsm.
   void ClearHandlingFsm(void) { m = nullptr; }
@@ -187,15 +202,17 @@ class StateMachineHandler {
 
   // Propagates ticking to current active state.
   void Update(const Context& ctx) {
-    if (bt[m->stack[m->top]]->BeforeUpdate()) return;
+    if (bt[m->stack[m->top]]->BeforeUpdate(ctx)) return;
     bt[m->stack[m->top]]->Update(ctx);
   }
 
   // Jump to a state.
   void Jump(const Context& ctx, const State& to) {
     int x = C(to);
-    check(m->stack[m->top], x);
-    bt[m->stack[m->top--]]->OnTerminate(ctx);
+    if (m->top != -1) {
+      check(m->stack[m->top], x);
+      bt[m->stack[m->top--]]->OnTerminate(ctx);
+    }
     m->stack[++m->top] = x;
     bt[x]->OnEnter(ctx);
   }
