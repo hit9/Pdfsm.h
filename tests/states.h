@@ -7,7 +7,7 @@
 #include "third_party/blinker.h"
 
 // Signals.
-static blinker::Board<3> signalBoard;
+static blinker::Board<4> signalBoard;
 
 static struct {
   std::shared_ptr<blinker::Signal> x = signalBoard.NewSignal("x");
@@ -51,7 +51,7 @@ static pdfsm::TransitionTable<S> transitionTable = {
 template <auto S>
 class BaseStateBehavior : public pdfsm::StateBehavior<S> {
  protected:
-  std::unique_ptr<blinker::Connection<3>> signalConnection = nullptr;
+  std::unique_ptr<blinker::Connection<4>> signalConnection = nullptr;
 
  public:
   void OnSetup() override {
