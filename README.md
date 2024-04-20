@@ -10,9 +10,9 @@ A simple pushdown finite states machine library that separates data and behavior
 
 1. States are just enum values.
 2. Implement behaviors by inheriting from `pdfsm::B`
-3. A behavior class shouldn't contain any internal data.
+3. A state behavior class shouldn't contain any internal data.
 4. A StateMachine is just a struct, holding active states.
-5. StateMachineHandler is for handling each state machine's behavior.
+5. `StateMachineHandler` is for handling each state machine's behavior.
 
 ### Code Example
 
@@ -22,9 +22,10 @@ A simple pushdown finite states machine library that separates data and behavior
    enum class RobotState { Idle, Moving, Dancing, N };
    ```
 
-2. Make a transition table:
+2. Makes a transition table, `jump`s or `push`s that violate this table will throw an exception
 
    ```cpp
+   // for each item: { from, {to list} }
    pdfsm::TransitionTable<RobotState> transitions{
        {RobotState::Idle, {RobotState::Moving, RobotState::Dancing}},
        {RobotState::Moving, {RobotState::Idle, RobotState::Dancing}},
@@ -32,7 +33,7 @@ A simple pushdown finite states machine library that separates data and behavior
    };
    ```
 
-2. Defines the state behavior class for each state:
+3. Defines a state behavior class for each state:
 
    ```cpp
    class RobotMovingBehavior : public pdfsm::B<RobotState::Moving> {
@@ -56,25 +57,28 @@ A simple pushdown finite states machine library that separates data and behavior
    };
    ```
 
-3. Creates a state machine, it's just a struct holding active states in a static-array based stack:
+4. Creates a state machine `fsm`.
+
+   A `fsm` is just a struct holding active states in a static-array based stack.
+   It can be used as an attribute (or field) of, i.e. a game entity.
 
    ```cpp
    pdfsm::StateMachine<RobotState> fsm;
    ```
 
-4. Makes a context for ticking / update:
+5. Makes a context for ticking / update, for propagating to the active state's hook methods:
 
    ```cpp
    pdfsm::Context ctx;
    ```
 
-5. Creates a handler to manipulate state transitions:
+6. Creates a handler to manipulate a fsm's state transitions:
 
    ```cpp
    pdfsm::StateMachineHandler<RobotState> h(behaviors, transitions);
    ```
 
-   Before handling a fsm struct, binds it:
+   Before handling a fsm struct, binds it at first:
 
    ```cpp
    h.SetHandlingFsm(fsm, ctx);
@@ -86,13 +90,13 @@ A simple pushdown finite states machine library that separates data and behavior
    h.ClearHandlingFsm();
    ```
 
-6. We can access the handler inside state behavior classes:
+7. We can access the handler's pointer inside a state behavior class:
 
    ```cpp
    auto& handler = GetHandler(); // returns a pointer to the handler.
    ```
 
-7. Operations / APIs of the handler:
+8. Operations / APIs of the handler:
 
    ```cpp
    // Jump to a state.
