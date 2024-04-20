@@ -19,6 +19,7 @@
 
 #include <any>
 #include <bitset>
+#include <chrono>
 #include <initializer_list>
 #include <memory>
 #include <stdexcept>
