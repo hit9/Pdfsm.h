@@ -19,6 +19,7 @@
 
 #include <any>
 #include <bitset>
+#include <cassert>
 #include <chrono>
 #include <initializer_list>
 #include <memory>
@@ -199,16 +200,22 @@ class StateMachineHandler {
   void ClearHandlingFsm(void) { m = nullptr; }
 
   // Returns current active state.
-  State Top(void) const { return static_cast<State>(m->stack[m->top]); }
+  State Top(void) const {
+    assert(m != nullptr);
+    assert(m->top >= 0);
+    return static_cast<State>(m->stack[m->top]);
+  }
 
   // Propagates ticking to current active state.
   void Update(const Context& ctx) {
+    assert(m != nullptr);
     if (bt[m->stack[m->top]]->BeforeUpdate(ctx)) return;
     bt[m->stack[m->top]]->Update(ctx);
   }
 
   // Jump to a state.
   void Jump(const Context& ctx, const State& to) {
+    assert(m != nullptr);
     int x = C(to);
     if (m->top != -1) {
       check(m->stack[m->top], x);
@@ -220,15 +227,20 @@ class StateMachineHandler {
 
   // Pause current active state and push a new one.
   void Push(const Context& ctx, const State& to) {
+    assert(m != nullptr);
     int x = C(to);
-    check(m->stack[m->top], x);
-    bt[m->stack[m->top]]->OnPause(ctx);
+    if (m->top != -1) {
+      check(m->stack[m->top], x);
+      bt[m->stack[m->top]]->OnPause(ctx);
+    }
     m->stack[++m->top] = x;
     bt[x]->OnEnter(ctx);
   }
 
   // Pop current active state and resume the previous paused state.
   void Pop(const Context& ctx) {
+    assert(m != nullptr);
+    assert(m->top >= 0 );
     bt[m->stack[m->top--]]->OnTerminate(ctx);
     bt[m->stack[m->top]]->OnResume(ctx);
   }

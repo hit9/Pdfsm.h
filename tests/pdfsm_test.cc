@@ -66,6 +66,7 @@ TEST_CASE("pdfsm/3", "[Update]") {
   REQUIRE(bb->updateCounterA == 1);
   REQUIRE(bb->updateCounterB == 2);
   REQUIRE(bb->updateCounterC == 1);
+  h.ClearHandlingFsm();
 }
 
 TEST_CASE("pdfsm/4", "[Signal]") {
@@ -93,4 +94,6 @@ TEST_CASE("pdfsm/4", "[Signal]") {
   REQUIRE(bb->updateCounterB == 0);  // B misses this update.
   // Should jump to C.
   REQUIRE(h.Top() == S::C);
+
+  h.ClearHandlingFsm();
 }
