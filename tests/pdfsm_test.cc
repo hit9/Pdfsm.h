@@ -8,6 +8,7 @@ TEST_CASE("pdfsm/1", "[Push and pop]") {
   auto bb = std::make_shared<Blackboard>();
   auto ctx = pdfsm::Context(bb);
   pdfsm::StateMachineHandler<S> h(behaviorTable, transitionTable);
+  pdfsm::StateMachine<S> fsm;
   h.SetHandlingFsm(fsm, ctx);
   // initial jumps to A
   REQUIRE(bb->onEnterCounterA == 1);
@@ -25,6 +26,7 @@ TEST_CASE("pdfsm/1", "[Push and pop]") {
 TEST_CASE("pdfsm/2", "[Jump Check]") {
   auto bb = std::make_shared<Blackboard>();
   auto ctx = pdfsm::Context(bb);
+  pdfsm::StateMachine<S> fsm;
   pdfsm::StateMachineHandler<S> h(behaviorTable, transitionTable);
   h.SetHandlingFsm(fsm, ctx);
   // inits to A
@@ -39,6 +41,7 @@ TEST_CASE("pdfsm/2", "[Jump Check]") {
 TEST_CASE("pdfsm/3", "[Update]") {
   auto bb = std::make_shared<Blackboard>();
   auto ctx = pdfsm::Context(bb);
+  pdfsm::StateMachine<S> fsm;
   pdfsm::StateMachineHandler<S> h(behaviorTable, transitionTable);
   h.SetHandlingFsm(fsm, ctx);
   // inits to A
@@ -69,6 +72,7 @@ TEST_CASE("pdfsm/4", "[Signal]") {
   signalBoard.Clear();
   auto bb = std::make_shared<Blackboard>();
   auto ctx = pdfsm::Context(bb);
+  pdfsm::StateMachine<S> fsm;
   pdfsm::StateMachineHandler<S> h(behaviorTable, transitionTable);
   h.SetHandlingFsm(fsm, ctx);
 
