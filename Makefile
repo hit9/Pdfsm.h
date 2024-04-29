@@ -43,4 +43,7 @@ run-tests: build-test
 clean:
 	make -C build clean
 
+lint:
+	cppcheck *.h --enable=warning,style,performance,portability --inline-suppr --language=c++
+
 .PHONY: build build-test

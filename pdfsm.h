@@ -12,7 +12,7 @@
 //
 // Requires: C++20
 //
-// verison 0.1.0
+// verison 0.1.1
 
 #ifndef HIT9_PDFSM_H
 #define HIT9_PDFSM_H
@@ -35,14 +35,14 @@ namespace pdfsm {
 // Ticking context.
 struct Context {
   // ticking seq number.
-  unsigned long long seq;
+  unsigned long long seq = 0;  // cppcheck-suppress
   // delta time since last tick.
   std::chrono::nanoseconds delta;
   // user data.
   std::any data;
 
   Context() = default;
-  Context(std::any data) : data(data) {}
+  explicit Context(std::any data) : data(data) {}
 };
 
 //////////////////////
@@ -179,8 +179,8 @@ class StateMachineHandler {
     }
 
     // Setup transitions.
-    for (auto& t : transitions)
-      for (auto& to : t.targets) {
+    for (const auto& t : transitions)
+      for (const auto& to : t.targets) {
         tt[C(t.from)][C(to)] = 1;
       }
   }
