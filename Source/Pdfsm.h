@@ -14,6 +14,10 @@
 //
 // verison 0.1.1
 
+// Changes
+// ~~~~~~~~
+// v0.2.0 Breaking change: change coding style
+
 #ifndef HIT9_PDFSM_H
 #define HIT9_PDFSM_H
 
