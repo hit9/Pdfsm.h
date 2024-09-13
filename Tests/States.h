@@ -4,16 +4,16 @@
 #include <vector>
 
 #include "Pdfsm.h"
-#include "3rdParty/blinker.h"
+#include "3rdParty/Blinker.h"
 
 // Signals.
-static blinker::Board<4> signalBoard;
+static Blinker::Board<4> signalBoard;
 
 static struct
 {
-	std::shared_ptr<blinker::Signal> x = signalBoard.NewSignal("x");
-	std::shared_ptr<blinker::Signal> y = signalBoard.NewSignal("y");
-	std::shared_ptr<blinker::Signal> z = signalBoard.NewSignal("z");
+	std::shared_ptr<Blinker::Signal> x = signalBoard.NewSignal("x");
+	std::shared_ptr<Blinker::Signal> y = signalBoard.NewSignal("y");
+	std::shared_ptr<Blinker::Signal> z = signalBoard.NewSignal("z");
 } signals;
 
 // Blackboard
@@ -60,7 +60,7 @@ template <auto S>
 class BaseStateBehavior : public Pdfsm::StateBehavior<S>
 {
 protected:
-	std::unique_ptr<blinker::Connection<4>> signalConnection = nullptr;
+	std::unique_ptr<Blinker::Connection<4>> signalConnection = nullptr;
 
 public:
 	void OnSetup() override
@@ -77,7 +77,7 @@ public:
 		if (signalConnection != nullptr)
 		{
 			// Poll signals, propagates to OnSignal.
-			signalConnection->Poll([&](blinker::SignalId signalId, std::any signalData) {
+			signalConnection->Poll([&](Blinker::SignalId signalId, std::any signalData) {
 				abort = OnSignal(ctx, signalId, signalData);
 			});
 		}
@@ -86,7 +86,7 @@ public:
 
 	// APIs To Override.
 
-	virtual bool OnSignal(const Pdfsm::Context& ctx, blinker::SignalId signalId,
+	virtual bool OnSignal(const Pdfsm::Context& ctx, Blinker::SignalId signalId,
 		std::any signalData)
 	{
 		return false;
@@ -103,7 +103,7 @@ public:
 	}
 	// Jumps to B on signal x
 	// Jumps to C on signal y
-	bool OnSignal(const Pdfsm::Context& ctx, blinker::SignalId signalId,
+	bool OnSignal(const Pdfsm::Context& ctx, Blinker::SignalId signalId,
 		std::any signalData) override
 	{
 		std::cout << "A: on signal: " << std::to_string(signalId) << std::endl;
@@ -160,7 +160,7 @@ public:
 	{
 		return { "z" };
 	}
-	bool OnSignal(const Pdfsm::Context& ctx, blinker::SignalId signalId,
+	bool OnSignal(const Pdfsm::Context& ctx, Blinker::SignalId signalId,
 		std::any signalData) override
 	{
 		std::cout << "B: on signal: " << std::to_string(signalId) << std::endl;
