@@ -1,4 +1,4 @@
-pdfsm.h
+Pdfsm.h
 =======
 
 ![](https://github.com/hit9/pdfsm.h/actions/workflows/tests.yml/badge.svg)
