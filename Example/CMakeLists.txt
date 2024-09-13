@@ -6,4 +6,4 @@ set(CMAKE_CXX_STANDARD 20)
 include_directories("../Source")
 
 # Targets
-add_executable(PdfsmExample main.cc)
+add_executable(PdfsmExample main.cpp)
