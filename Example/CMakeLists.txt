@@ -3,7 +3,7 @@ project(pdfsm_example CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 
-include_directories("..")
+include_directories("../Source")
 
 # Targets
-add_executable(pdfsm_example main.cc)
+add_executable(PdfsmExample main.cc)
