@@ -1,17 +1,17 @@
 defalut: build
 
 cmake:
-	cmake -S  . -B build \
+	cmake -S  . -B Build \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_EXPORT_COMPILE_COMMANDS=1
 
 build: cmake
-	cd build && make
+	cd Build && make
 
 run:
-	./build/pdfsm_example
+	./Build/PdfsmExample
 
 clean:
-	make -C build clean
+	make -C Build clean
 
 .PHONY: build

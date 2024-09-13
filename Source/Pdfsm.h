@@ -26,7 +26,7 @@
 #include <stdexcept>
 #include <type_traits>
 
-namespace pdfsm
+namespace Pdfsm
 {
 
 	//////////////////////
@@ -273,6 +273,6 @@ namespace pdfsm
 			bt[m->stack[m->top]]->OnResume(ctx);
 		}
 	};
-} // namespace pdfsm
+} // namespace Pdfsm
 
 #endif

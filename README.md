@@ -9,7 +9,7 @@ A simple pushdown finite states machine library that separates data and behavior
 ### In brief
 
 1. States are just enum values.
-2. Implement behaviors by inheriting from `pdfsm::B`
+2. Implement behaviors by inheriting from `Pdfsm::B`
 3. A state behavior class shouldn't contain any internal data.
 4. A StateMachine is just a struct, holding active states.
 5. `StateMachineHandler` is for handling each state machine's behavior.
@@ -26,7 +26,7 @@ A simple pushdown finite states machine library that separates data and behavior
 
    ```cpp
    // for each item: { from, {to list} }
-   pdfsm::TransitionTable<RobotState> transitions{
+   Pdfsm::TransitionTable<RobotState> transitions{
        {RobotState::Idle, {RobotState::Moving, RobotState::Dancing}},
        {RobotState::Moving, {RobotState::Idle, RobotState::Dancing}},
        {RobotState::Dancing, {RobotState::Idle}},
@@ -36,21 +36,21 @@ A simple pushdown finite states machine library that separates data and behavior
 3. Defines a state behavior class for each state:
 
    ```cpp
-   class RobotMovingBehavior : public pdfsm::B<RobotState::Moving> {
+   class RobotMovingBehavior : public Pdfsm::B<RobotState::Moving> {
     public:
      void OnSetup() override {}
-     void Update(const pdfsm::Context& ctx) override {}
-     void OnEnter(const pdfsm::Context& ctx) override {}
-     void OnTerminate(const pdfsm::Context& ctx) override { }
-     void OnPause(const pdfsm::Context& ctx) override {}
-     void OnResume(const pdfsm::Context& ctx) override {}
+     void Update(const Pdfsm::Context& ctx) override {}
+     void OnEnter(const Pdfsm::Context& ctx) override {}
+     void OnTerminate(const Pdfsm::Context& ctx) override { }
+     void OnPause(const Pdfsm::Context& ctx) override {}
+     void OnResume(const Pdfsm::Context& ctx) override {}
    };
    ```
 
    And a behavior table:
 
    ```cpp
-   pdfsm::BTable<RobotState> behaviors{
+   Pdfsm::BTable<RobotState> behaviors{
        std::make_unique<RobotIdleBehavior>(),
        std::make_unique<RobotMovingBehavior>(),
        std::make_unique<RobotDancingBehavior>(),
@@ -63,19 +63,19 @@ A simple pushdown finite states machine library that separates data and behavior
    It can be used as an attribute (or field) of, i.e. a game entity.
 
    ```cpp
-   pdfsm::StateMachine<RobotState> fsm;
+   Pdfsm::StateMachine<RobotState> fsm;
    ```
 
 5. Makes a context for ticking / update, for propagating to the active state's hook methods:
 
    ```cpp
-   pdfsm::Context ctx;
+   Pdfsm::Context ctx;
    ```
 
 6. Creates a handler to manipulate a fsm's state transitions:
 
    ```cpp
-   pdfsm::StateMachineHandler<RobotState> h(behaviors, transitions);
+   Pdfsm::StateMachineHandler<RobotState> h(behaviors, transitions);
    ```
 
    Before handling a fsm struct, binds it at first:

@@ -1,5 +1,5 @@
 cmake:
-	cmake -S . -B build \
+	cmake -S . -B Build \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_CXX_STANDARD=20 \
 		-DCMAKE_EXPORT_COMPILE_COMMANDS=1
